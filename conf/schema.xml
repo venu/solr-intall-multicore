@@ -1,0 +1,59 @@
+<schema name="user_order" version="1.1">
+    <types>
+        <fieldtype name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+        <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true" />
+        <fieldtype name="binary" class="solr.BinaryField" />
+
+        <fieldType name="int" class="solr.TrieIntField" precisionStep="0" omitNorms="true" positionIncrementGap="0" />
+        <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" omitNorms="true" positionIncrementGap="0" />
+        <fieldType name="long" class="solr.TrieLongField" precisionStep="0" omitNorms="true" positionIncrementGap="0" />
+        <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" omitNorms="true" positionIncrementGap="0" />
+
+        <fieldType name="date" class="solr.TrieDateField" omitNorms="true" precisionStep="0" positionIncrementGap="0" />
+        <fieldType name="tdate" class="solr.TrieDateField" omitNorms="true" precisionStep="6" positionIncrementGap="0" />
+
+        <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+            <analyzer type="index">
+                <tokenizer class="solr.StandardTokenizerFactory" />
+                <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <!--<filter class="solr.NGramFilterFactory" minGramSize="3" maxGramSize="25" />-->
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
+                <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true" />
+                <filter class="solr.LowerCaseFilterFactory" />
+            </analyzer>
+        </fieldType>
+    </types>
+	
+    <fields>
+        <!-- general -->
+        <field name="id" type="string" indexed="true" stored="true" multiValued="false" required="true"/>
+        <field name="type" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="name" type="text_general" indexed="true" stored="true" multiValued="false"/>
+        <field name="desc" type="text_general" indexed="true" stored="true" multiValued="false"/>
+        <field name="user_id" type="int" indexed="false" stored="true" multiValued="false"/>
+        <field name="facebook_id" type="string" indexed="false" stored="true" multiValued="false"/>
+        <field name="location" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="image_name" type="string" indexed="false" stored="true" multiValued="false"/>
+        
+        <dynamicField name="*_i"  type="int"    indexed="true"  stored="true"/>
+        <dynamicField name="*_is" type="int"    indexed="true"  stored="true"  multiValued="true"/>
+        <dynamicField name="*_s"  type="string"  indexed="true"  stored="true" />
+        <dynamicField name="*_ss" type="string"  indexed="true"  stored="true" multiValued="true"/>
+        <dynamicField name="*_t"  type="text_general"    indexed="true"  stored="true"/>
+        <dynamicField name="*_txt" type="text_general"   indexed="true"  stored="true" multiValued="true"/>
+    </fields>
+
+    <!-- field to use to determine and enforce document uniqueness. -->
+    <uniqueKey>id</uniqueKey>
+
+    <!-- field for the QueryParser to use when an explicit fieldname is absent -->
+    <defaultSearchField>name</defaultSearchField>
+
+    <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
+    <solrQueryParser defaultOperator="OR"/>
+	
+</schema>
